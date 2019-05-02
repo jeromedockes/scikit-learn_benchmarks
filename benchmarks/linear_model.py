@@ -1,5 +1,5 @@
 from sklearn.linear_model import (LogisticRegression, Ridge, ElasticNet, Lasso,
-                                  LinearRegression, SGDRegressor)
+                                  LinearRegression, SGDRegressor, RidgeCV)
 
 from .common import Benchmark, Estimator, Predictor
 from .datasets import (_20newsgroups_highdim_dataset,
@@ -85,6 +85,35 @@ class Ridge_bench(Benchmark, Estimator, Predictor):
 
         if representation == 'sparse' and solver == 'svd':
             raise NotImplementedError
+
+    def make_scorers(self):
+        make_gen_reg_scorers(self)
+
+
+class RidgeCV_bench(Benchmark, Estimator, Predictor):
+    """
+    Benchmarks for Ridge.
+    """
+
+    param_names = ['representation', 'gcv_mode']
+    params = (['dense', 'sparse'], ['auto'])
+
+    def setup_cache(self):
+        super().setup_cache()
+
+    def setup_cache_(self, params):
+        print(params)
+        representation, gcv_mode = params
+        if representation == 'dense':
+            data = _synth_regression_dataset(
+                n_samples=10000, n_features=100)
+        else:
+            data = _synth_regression_sparse_dataset(n_samples=10000,
+                                                    n_features=100,
+                                                    density=0.005)
+        estimator = RidgeCV(gcv_mode=gcv_mode, fit_intercept=True)
+
+        return data, estimator
 
     def make_scorers(self):
         make_gen_reg_scorers(self)

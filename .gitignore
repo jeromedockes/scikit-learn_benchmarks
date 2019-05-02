@@ -7,3 +7,5 @@ html/
 results/
 scikit-learn/
 joblib/
+*compared.csv
+ridge_benchmark.sh
